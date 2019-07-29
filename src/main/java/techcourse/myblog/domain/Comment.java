@@ -44,6 +44,10 @@ public class Comment {
 
     @Override
     public String toString() {
-        return "Comment{" + contents + "}";
+        return "Comment{id :" + id + ", contents : " + contents + "}";
+    }
+
+    public void modify(String contents) {
+        this.contents = contents;
     }
 }

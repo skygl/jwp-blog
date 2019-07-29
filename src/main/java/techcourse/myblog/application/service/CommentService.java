@@ -9,6 +9,7 @@ import techcourse.myblog.application.converter.ArticleConverter;
 import techcourse.myblog.application.converter.CommentConverter;
 import techcourse.myblog.application.converter.UserConverter;
 import techcourse.myblog.application.dto.CommentDto;
+import techcourse.myblog.application.service.exception.NotExistCommentIdException;
 import techcourse.myblog.domain.Article;
 import techcourse.myblog.domain.Comment;
 import techcourse.myblog.domain.CommentRepository;
@@ -47,6 +48,7 @@ public class CommentService {
         commentRepository.save(commentConverter.convertFromDto(commentDto));
     }
 
+    @Transactional(readOnly = true)
     public List<CommentDto> findAllCommentsByArticleId(Long articleId, String sessionEmail) {
         Article article = articleService.findById(articleId);
         List<Comment> comments = commentRepository.findByArticle(article);
@@ -55,5 +57,12 @@ public class CommentService {
             commentDto.matchAuthor(sessionEmail);
         }
         return commentDtos;
+    }
+
+    @Transactional
+    public void modify(Long commentid, CommentDto commentDto) {
+        Comment comment = commentRepository.findById(commentid).orElseThrow(() -> new NotExistCommentIdException("존재하지 않는 Comment ID 입니다."));
+        log.info("Modify - " + comment);
+        comment.modify(commentDto.getContents());
     }
 }
